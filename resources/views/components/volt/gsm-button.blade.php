@@ -1,0 +1,219 @@
+
+<?php
+
+use function Livewire\Volt\set;
+
+// Props with defaults
+set('label', 'Button');
+set('variant', 'primary'); // primary, danger, ghost
+set('size', 'md'); // sm, md, lg
+set('disabled', false);
+set('loading', false);
+set('type', 'button');
+set('fullWidth', false);
+set('icon', null);
+set('iconPosition', 'left'); // left, right
+set('className', '');
+
+?>
+
+<button 
+    type="{{ $type }}"
+    @if($disabled || $loading) disabled @endif
+    class="gsm-button 
+        gsm-button--{{ $variant }}
+        gsm-button--{{ $size }}
+        {{ $fullWidth ? 'gsm-button--full' : '' }}
+        {{ $className }}"
+    x-data="{ 
+        isLoading: {{ $loading ? 'true' : 'false' }},
+        isDisabled: {{ $disabled ? 'true' : 'false' }}
+    }"
+>
+    @if(!$loading)
+        @if($icon && $iconPosition === 'left')
+            <span class="gsm-button__icon gsm-button__icon--left">
+                {!! $icon !!}
+            </span>
+        @endif
+        
+        <span class="gsm-button__label">{{ $label }}</span>
+        
+        @if($icon && $iconPosition === 'right')
+            <span class="gsm-button__icon gsm-button__icon--right">
+                {!! $icon !!}
+            </span>
+        @endif
+    @else
+        <span class="gsm-button__spinner">
+            <svg viewBox="0 0 24 24" class="animate-spin">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" opacity="0.2"/>
+                <path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-width="2"/>
+            </svg>
+        </span>
+        <span class="gsm-button__loading-label">Processing...</span>
+    @endif
+</button>
+
+<style>
+.gsm-button {
+    @apply inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 rounded-lg border;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--electric-blue)];
+    min-height: 44px;
+    padding: 0 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Base Glassmorphism */
+.gsm-button {
+    background: rgba(19, 24, 40, 0.8);
+    backdrop-filter: blur(20px);
+    border-color: rgba(0, 212, 255, 0.2);
+    color: var(--electric-blue);
+}
+
+.gsm-button:hover:not(:disabled) {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: var(--electric-blue);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+/* Primary Variant - Glowing Blue */
+.gsm-button--primary {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(99, 102, 241, 0.2));
+    border-color: var(--electric-blue);
+    color: var(--electric-blue);
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.gsm-button--primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.gsm-button--primary:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.gsm-button--primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(99, 102, 241, 0.3));
+    box-shadow: 
+        0 0 30px rgba(0, 212, 255, 0.4),
+        0 0 60px rgba(0, 212, 255, 0.1);
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+}
+
+.gsm-button--primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Danger Variant - Glowing Red */
+.gsm-button--danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(185, 28, 28, 0.2));
+    border-color: #ef4444;
+    color: #ef4444;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+.gsm-button--danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(185, 28, 28, 0.3));
+    box-shadow: 
+        0 0 30px rgba(239, 68, 68, 0.4),
+        0 0 60px rgba(239, 68, 68, 0.1);
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+}
+
+/* Ghost Variant - Glassmorphism */
+.gsm-button--ghost {
+    background: rgba(19, 24, 40, 0.4);
+    border-color: rgba(0, 212, 255, 0.3);
+    color: var(--text-primary);
+    text-shadow: none;
+}
+
+.gsm-button--ghost:hover:not(:disabled) {
+    background: rgba(19, 24, 40, 0.6);
+    border-color: var(--electric-blue);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+/* Sizes */
+.gsm-button--sm {
+    @apply px-3 py-1.5 text-sm;
+    min-height: 36px;
+}
+
+.gsm-button--md {
+    @apply px-5 py-2 text-base;
+    min-height: 44px;
+}
+
+.gsm-button--lg {
+    @apply px-6 py-3 text-lg;
+    min-height: 52px;
+}
+
+/* Full Width */
+.gsm-button--full {
+    @apply w-full;
+}
+
+/* Icon Spacing */
+.gsm-button__icon {
+    @apply flex-shrink-0;
+    width: 18px;
+    height: 18px;
+}
+
+.gsm-button__icon--left {
+    @apply mr-2;
+}
+
+.gsm-button__icon--right {
+    @apply ml-2;
+}
+
+/* Loading State */
+.gsm-button__spinner {
+    @apply flex items-center justify-center;
+    width: 18px;
+    height: 18px;
+}
+
+.gsm-button__loading-label {
+    @apply ml-2;
+}
+
+.gsm-button:disabled .gsm-button__label {
+    @apply opacity-50;
+}
+
+/* Focus States */
+.gsm-button:focus-visible {
+    outline: 2px solid var(--electric-blue);
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .gsm-button__spinner svg {
+        animation: none;
+    }
+    
+    .gsm-button--primary::before {
+        transition: none;
+    }
+    
+    .gsm-button {
+        transition: none;
+    }
+}
+</style>

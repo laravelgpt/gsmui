@@ -1,0 +1,224 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    
+# Block all sensitive files comprehensively
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git|json|yml|xml|md|dist|config|example|sample)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(composer|package|gulpfile|webpack|vite|tailwind|postcss|browserslist|eslint|babel)\.json$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.git">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Order Allow,Deny
+    Deny from all
+</DirectoryMatch>
+
+# Block all sensitive files comprehensively
+<FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git|json|yml|xml|md|dist|config|example|sample)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(composer|package|gulpfile|webpack|vite|tailwind|postcss|browserslist|eslint|babel)\.json$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.git">
+    Require all denied
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Require all denied
+</DirectoryMatch>
+
+# Explicit blocks for audit
+<Files ".env">
+    Require all denied
+</Files>
+
+<Files "composer.json">
+    Require all denied
+</Files>
+
+<Files "composer.lock">
+    Require all denied
+</Files>
+
+<Files "package.json">
+    Require all denied
+</Files>
+</IfModule>
+
+    RewriteEngine On
+
+    # Force HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Redirect Trailing Slashes
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # Handle Front Controller
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+    # Security Headers
+    <IfModule mod_headers.c>
+        Header always set X-Frame-Options "DENY"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set X-XSS-Protection "1; mode=block"
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        Header always set Referrer-Policy "strict-origin-when-cross-origin"
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;"
+        Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header always set Pragma "no-cache"
+        Header always set Expires "0"
+    
+# Block all sensitive files comprehensively
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git|json|yml|xml|md|dist|config|example|sample)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(composer|package|gulpfile|webpack|vite|tailwind|postcss|browserslist|eslint|babel)\.json$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.git">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Order Allow,Deny
+    Deny from all
+</DirectoryMatch>
+
+# Block all sensitive files comprehensively
+<FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git|json|yml|xml|md|dist|config|example|sample)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(composer|package|gulpfile|webpack|vite|tailwind|postcss|browserslist|eslint|babel)\.json$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.git">
+    Require all denied
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Require all denied
+</DirectoryMatch>
+
+# Explicit blocks for audit
+<Files ".env">
+    Require all denied
+</Files>
+
+<Files "composer.json">
+    Require all denied
+</Files>
+
+<Files "composer.lock">
+    Require all denied
+</Files>
+
+<Files "package.json">
+    Require all denied
+</Files>
+</IfModule>
+
+    # Block sensitive files
+    <FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git)$">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+
+# Block all sensitive files comprehensively
+<FilesMatch "^\.">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git|json|yml|xml|md|dist|config|example|sample)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(composer|package|gulpfile|webpack|vite|tailwind|postcss|browserslist|eslint|babel)\.json$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.git">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Order Allow,Deny
+    Deny from all
+</DirectoryMatch>
+
+# Block all sensitive files comprehensively
+<FilesMatch "\.(env|log|htaccess|ini|lock|sql|bak|swp|git|json|yml|xml|md|dist|config|example|sample)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(composer|package|gulpfile|webpack|vite|tailwind|postcss|browserslist|eslint|babel)\.json$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.git">
+    Require all denied
+</FilesMatch>
+
+<DirectoryMatch "\.git">
+    Require all denied
+</DirectoryMatch>
+
+# Explicit blocks for audit
+<Files ".env">
+    Require all denied
+</Files>
+
+<Files "composer.json">
+    Require all denied
+</Files>
+
+<Files "composer.lock">
+    Require all denied
+</Files>
+
+<Files "package.json">
+    Require all denied
+</Files>
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Disable server signature
+ServerSignature Off
