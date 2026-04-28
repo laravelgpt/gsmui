@@ -78,3 +78,4 @@ Route::prefix('templates')->group(function () {
         return view('admin.templates.soc-dashboard');
     })->name('templates.soc-dashboard');
 });
+Route::get("/playground", function () { return view("playground"); });

@@ -1,0 +1,265 @@
+
+/* ==========================================================================
+   GSM-UI Design Tokens
+   ========================================================================== */
+
+:root {
+  /* ==========================================================================
+     Color System - Midnight Electric Theme
+     ========================================================================== */
+  
+  /* Primary Brand Colors */
+  --color-electric-blue: #00D4FF;
+  --color-electric-blue-hover: #33DFFF;
+  --color-electric-blue-dark: #00AACC;
+  
+  --color-toxic-green: #39FF14;
+  --color-toxic-green-hover: #5CFF3A;
+  --color-toxic-green-dark: #2CCC00;
+  
+  --color-indigo: #6366F1;
+  --color-indigo-hover: #8386F3;
+  --color-indigo-dark: #4F52D0;
+  
+  /* Background & Surface */
+  --color-deep-space: #0B0F19;
+  --color-deep-space-light: #131828;
+  --color-deep-space-lighter: #1A2033;
+  
+  /* Neutral Colors */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  
+  --color-gray-900: #111827;
+  --color-gray-800: #1F2937;
+  --color-gray-700: #374151;
+  --color-gray-600: #4B5563;
+  --color-gray-500: #6B7280;
+  --color-gray-400: #9CA3AF;
+  --color-gray-300: #D1D5DB;
+  --color-gray-200: #E5E7EB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-50: #F9FAFB;
+  
+  /* Semantic Colors */
+  --color-danger: #EF4444;
+  --color-danger-hover: #F87171;
+  --color-danger-dark: #DC2626;
+  
+  --color-success: #10B981;
+  --color-success-hover: #34D399;
+  --color-success-dark: #059669;
+  
+  --color-warning: #F59E0B;
+  --color-warning-hover: #FBBF24;
+  --color-warning-dark: #D97706;
+  
+  --color-info: #3B82F6;
+  --color-info-hover: #60A5FA;
+  --color-info-dark: #2563EB;
+  
+  /* ==========================================================================
+     Spacing Scale
+     ========================================================================== */
+  
+  --space-xxs: 0.125rem;   /* 2px */
+  --space-xs: 0.25rem;     /* 4px */
+  --space-sm: 0.5rem;      /* 8px */
+  --space-md: 1rem;        /* 16px */
+  --space-lg: 1.5rem;      /* 24px */
+  --space-xl: 2rem;        /* 32px */
+  --space-2xl: 3rem;       /* 48px */
+  --space-3xl: 4rem;       /* 64px */
+  --space-4xl: 6rem;       /* 96px */
+  
+  /* ==========================================================================
+     Typography Scale
+     ========================================================================== */
+  
+  --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+                      'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', 
+                      'Segoe UI Mono', monospace;
+  
+  --font-size-xs: 0.75rem;      /* 12px */
+  --font-size-sm: 0.875rem;     /* 14px */
+  --font-size-base: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;     /* 18px */
+  --font-size-xl: 1.25rem;      /* 20px */
+  --font-size-2xl: 1.5rem;      /* 24px */
+  --font-size-3xl: 1.875rem;    /* 30px */
+  --font-size-4xl: 2.25rem;     /* 36px */
+  --font-size-5xl: 3rem;        /* 48px */
+  
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* ==========================================================================
+     Border Radius
+     ========================================================================== */
+  
+  --radius-xs: 0.125rem;    /* 2px */
+  --radius-sm: 0.25rem;     /* 4px */
+  --radius-md: 0.375rem;    /* 6px */
+  --radius-lg: 0.5rem;      /* 8px */
+  --radius-xl: 0.75rem;     /* 12px */
+  --radius-2xl: 1rem;       /* 16px */
+  --radius-full: 9999px;
+  
+  /* ==========================================================================
+     Shadows & Effects
+     ========================================================================== */
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-backdrop: blur(12px);
+  
+  /* Glow Effects */
+  --glow-blue: 0 0 20px rgba(0, 212, 255, 0.3);
+  --glow-blue-strong: 0 0 40px rgba(0, 212, 255, 0.5);
+  --glow-green: 0 0 20px rgba(57, 255, 20, 0.3);
+  --glow-indigo: 0 0 20px rgba(99, 102, 241, 0.3);
+  
+  /* Drop Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  --shadow-2xl: 0 25px 50px rgba(0, 0, 0, 0.2);
+  
+  /* ==========================================================================
+     Animation & Transitions
+     ========================================================================== */
+  
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-smooth: 300ms ease;
+  --transition-bounce: 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* ==========================================================================
+     Layout & Breakpoints
+     ========================================================================== */
+  
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* Container Max Widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  
+  /* ==========================================================================
+     Z-Index Scale
+     ========================================================================== */
+  
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal: 1040;
+  --z-popover: 1050;
+  --z-tooltip: 1060;
+  --z-toast: 1070;
+}
+
+/* ==========================================================================
+   Dark Mode Overrides (Optional)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode adjustments can go here */
+  }
+}
+
+/* ==========================================================================
+   Legacy Variables (for compatibility)
+   ========================================================================== */
+
+:root {
+  /* Midnight Electric Theme Colors */
+  --electric-blue: var(--color-electric-blue);
+  --toxic-green: var(--color-toxic-green);
+  --indigo: var(--color-indigo);
+  --deep-space: var(--color-deep-space);
+  
+  /* Glassmorphism */
+  --glass-bg: var(--glass-bg);
+  --glass-border: var(--glass-border);
+}
+
+/* ==========================================================================
+   Usage Examples
+   ========================================================================== */
+
+/* Component styling with tokens */
+.example-button {
+  background-color: var(--color-electric-blue);
+  color: var(--color-deep-space);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-normal);
+  border: 1px solid var(--glass-border);
+}
+
+.example-button:hover {
+  background-color: var(--color-electric-blue-hover);
+  box-shadow: var(--glow-blue);
+}
+
+/* Grid layout with tokens */
+.example-grid {
+  display: grid;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  max-width: var(--container-xl);
+  margin: 0 auto;
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  .example-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: var(--breakpoint-lg)) {
+  .example-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Glassmorphism card */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-backdrop);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--glass-shadow);
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  :root {
+    --color-deep-space: #ffffff;
+    --color-white: #000000;
+  }
+}
