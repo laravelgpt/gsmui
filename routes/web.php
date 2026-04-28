@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\StripeWebhookController;
 
 // Home & Marketing
 Route::get('/', [WebController::class, 'index'])->name('home');
@@ -24,7 +25,7 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // Stripe Webhook
-Route::post('/webhook/stripe', [\App\Http\Controllers\StripeWebhookController::class, 'handleWebhook'])->name('webhook.stripe');
+Route::post('/webhook/stripe', [StripeWebhookController::class, 'handleWebhook'])->name('webhook.stripe');
 
 // Admin Routes (Filament)
 Route::get('/admin', function () {
