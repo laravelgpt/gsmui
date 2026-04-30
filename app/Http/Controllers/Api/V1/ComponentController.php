@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers\Api\V1;
@@ -48,7 +47,7 @@ class ComponentController extends Controller
             $components->getCollection()->transform(function ($component) use ($user) {
                 $component->accessible = $this->accessService->canAccessComponent($user, $component);
                 $component->purchased = $user->purchases()
-                    ->where('purchasable_type', 'App\\Models\\Component')
+                    ->where('purchasable_type', 'App\Models\Component')
                     ->where('purchasable_id', $component->id)
                     ->where('payment_status', 'completed')
                     ->exists();

@@ -1,0 +1,13 @@
+{
+  "name": "component-library-default",
+  "version": "1.0.0",
+  "frameworks": [
+    "livewire",
+    "blade",
+    "vue",
+    "react",
+    "svelte",
+    "tailwind",
+    "gridcn"
+  ]
+}

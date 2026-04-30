@@ -1,0 +1,1127 @@
+#!/usr/bin/env python3
+"""
+Component Library Builder - MCP Skill
+
+Builds comprehensive component libraries for multiple frameworks:
+- Livewire + Blade (Laravel)
+- Filament (Laravel Admin)
+- Vue.js 3
+- React
+- Svelte
+- Tailwind CSS
+- Alpine.js
+- GridCN (Grid system)
+- And more!
+"""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import Dict, Any, List, Optional
+import shutil
+
+
+class ComponentLibraryBuilder:
+    """Builds multi-framework component libraries."""
+    
+    def __init__(self, output_dir: str):
+        self.output_dir = Path(output_dir).resolve()
+        self.components = self._load_component_registry()
+        self.frameworks = {
+            'livewire': self._build_livewire_component,
+            'blade': self._build_blade_component,
+            'filament': self._build_filament_component,
+            'vue': self._build_vue_component,
+            'react': self._build_react_component,
+            'svelte': self._build_svelte_component,
+            'tailwind': self._build_tailwind_config,
+            'alpine': self._build_alpine_component,
+            'gridcn': self._build_gridcn_system,
+        }
+    
+    def _load_component_registry(self) -> Dict[str, Dict]:
+        """Load component registry with all available components."""
+        return {
+            # Layout Components
+            'card': {
+                'name': 'Card',
+                'description': 'Flexible content container',
+        default=['livewire', 'blade', 'vue', 'react', 'svelte', 'tailwind', 'alpine', 'gridcn'],
+                'variants': ['default', 'elevated', 'outlined', 'hoverable']
+            },
+            'grid': {
+                'name': 'Grid',
+                'description': 'Responsive grid system',
+                'frameworks': ['tailwind', 'gridcn', 'vue', 'react'],
+                'variants': ['2-col', '3-col', '4-col', 'responsive']
+            },
+            'container': {
+                'name': 'Container',
+                'description': 'Content container with max-width',
+                'frameworks': ['tailwind', 'blade', 'vue', 'react'],
+                'variants': ['default', 'fluid', 'boxed']
+            },
+            'stack': {
+                'name': 'Stack',
+                'description': 'Vertical spacing system',
+                'frameworks': ['tailwind', 'alpine', 'vue', 'react'],
+                'variants': ['sm', 'md', 'lg', 'xl']
+            },
+            
+            # Form Components
+            'input': {
+                'name': 'Input',
+                'description': 'Text input field',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'outlined', 'filled', 'error']
+            },
+            'textarea': {
+                'name': 'Textarea',
+                'description': 'Multi-line text input',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'outlined', 'resizable']
+            },
+            'select': {
+                'name': 'Select',
+                'description': 'Dropdown selection',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'multiple', 'searchable']
+            },
+            'checkbox': {
+                'name': 'Checkbox',
+                'description': 'Boolean selection',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'indeterminate']
+            },
+            'radio': {
+                'name': 'Radio',
+                'description': 'Single choice from multiple options',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'card']
+            },
+            'switch': {
+                'name': 'Switch',
+                'description': 'Toggle switch',
+                'frameworks': ['livewire', 'filament', 'vue', 'react', 'svelte', 'alpine', 'tailwind'],
+                'variants': ['default', 'ios', 'pill']
+            },
+            'button': {
+                'name': 'Button',
+                'description': 'Action trigger',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte', 'alpine', 'tailwind'],
+                'variants': ['primary', 'secondary', 'success', 'warning', 'danger', 'ghost']
+            },
+            'form': {
+                'name': 'Form',
+                'description': 'Form wrapper with validation',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'validation', 'wizard']
+            },
+            
+            # Data Display
+            'table': {
+                'name': 'Table',
+                'description': 'Data table with sorting',
+                'frameworks': ['livewire', 'blade', 'filament', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'striped', 'hover', 'sortable']
+            },
+            'datagrid': {
+                'name': 'DataGrid',
+                'description': 'Advanced data grid with filters',
+                'frameworks': ['filament', 'vue', 'react'],
+                'variants': ['server-side', 'client-side', 'paginated']
+            },
+            'list': {
+                'name': 'List',
+                'description': 'Item list with actions',
+                'frameworks': ['livewire', 'blade', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'avatars', 'divided']
+            },
+            'badge': {
+                'name': 'Badge',
+                'description': 'Status indicator',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'tailwind', 'alpine'],
+                'variants': ['default', 'dot', 'ribbon']
+            },
+            'tag': {
+                'name': 'Tag',
+                'description': 'Keyword tag',
+                'frameworks': ['vue', 'react', 'svelte', 'tailwind', 'alpine'],
+                'variants': ['default', 'removable', 'rounded']
+            },
+            'avatar': {
+                'name': 'Avatar',
+                'description': 'User avatar',
+                'frameworks': ['blade', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'rounded', 'bordered']
+            },
+            'progress': {
+                'name': 'Progress',
+                'description': 'Progress indicator',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'tailwind'],
+                'variants': ['linear', 'circular', 'striped']
+            },
+            
+            # Navigation
+            'navbar': {
+                'name': 'Navbar',
+                'description': 'Top navigation bar',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'sticky', 'transparent']
+            },
+            'sidebar': {
+                'name': 'Sidebar',
+                'description': 'Collapsible sidebar',
+                'frameworks': ['livewire', 'blade', 'vue', 'react', 'alpine'],
+                'variants': ['default', 'collapsible', 'mini']
+            },
+            'breadcrumb': {
+                'name': 'Breadcrumb',
+                'description': 'Navigation breadcrumb',
+                'frameworks': ['blade', 'vue', 'react', 'svelte'],
+                'variants': ['default', 'icon', 'collapse']
+            },
+            'tabs': {
+                'name': 'Tabs',
+                'description': 'Tabbed navigation',
+                'frameworks': ['livewire', 'blade', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'pills', 'underline']
+            },
+            'menu': {
+                'name': 'Menu',
+                'description': 'Dropdown menu',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'floating', 'context']
+            },
+            
+            # Feedback
+            'modal': {
+                'name': 'Modal',
+                'description': 'Modal dialog',
+                'frameworks': ['livewire', 'blade', 'vue', 'react', 'svelte', 'alpine'],
+                'variants': ['default', 'slide', 'fade']
+            },
+            'alert': {
+                'name': 'Alert',
+                'description': 'Alert message',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'tailwind'],
+                'variants': ['success', 'error', 'warning', 'info']
+            },
+            'toast': {
+                'name': 'Toast',
+                'description': 'Toast notification',
+                'frameworks': ['vue', 'react', 'svelte', 'alpine'],
+                'variants': ['top-right', 'bottom-left', 'stacked']
+            },
+            'tooltip': {
+                'name': 'Tooltip',
+                'description': 'Hover tooltip',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'alpine', 'tailwind'],
+                'variants': ['top', 'bottom', 'left', 'right']
+            },
+            'spinner': {
+                'name': 'Spinner',
+                'description': 'Loading spinner',
+                'frameworks': ['blade', 'vue', 'react', 'svelte', 'tailwind'],
+                'variants': ['dots', 'bars', 'circle']
+            },
+            
+            # GridCN Components
+            'grid-container': {
+                'name': 'GridContainer',
+                'description': 'GridCN container',
+                'frameworks': ['gridcn'],
+                'variants': ['default', 'fluid']
+            },
+            'grid-row': {
+                'name': 'GridRow',
+                'description': 'GridCN row',
+                'frameworks': ['gridcn'],
+                'variants': ['default', 'no-gutter']
+            },
+            'grid-col': {
+                'name': 'GridCol',
+                'description': 'GridCN column',
+                'frameworks': ['gridcn'],
+                'variants': ['auto', 'responsive']
+            },
+        }
+    
+    def build_library(self, frameworks: List[str], components: List[str],
+                     theme: str = 'default', output_path: Optional[str] = None) -> Dict[str, Any]:
+        """Build component library for specified frameworks."""
+        print(f"🏗️  Building component library...")
+        print(f"   Frameworks: {', '.join(frameworks)}")
+        print(f"   Components: {', '.join(components)}")
+        print(f"   Theme: {theme}")
+        
+        build_dir = Path(output_path or self.output_dir) / f"component-library-{theme}"
+        build_dir.mkdir(parents=True, exist_ok=True)
+        
+        results = {
+            'success': True,
+            'build_dir': str(build_dir),
+            'frameworks': {},
+            'components_built': [],
+            'errors': []
+        }
+        
+        # Create shared assets
+        self._create_shared_assets(build_dir, theme)
+        
+        # Build each framework
+        for framework in frameworks:
+            if framework in self.frameworks:
+                try:
+                    framework_dir = build_dir / framework
+                    framework_dir.mkdir(exist_ok=True)
+                    
+                    framework_components = [
+                        c for c in components 
+                        if c in self.components and framework in self.components[c]['frameworks']
+                    ]
+                    
+                    if framework_components:
+                        print(f"\n  Building {framework} components...")
+                        self.frameworks[framework](framework_dir, framework_components, theme)
+                        results['frameworks'][framework] = {
+                            'status': 'success',
+                            'components': framework_components,
+                            'path': str(framework_dir)
+                        }
+                        results['components_built'].extend(framework_components)
+                    else:
+                        print(f"  ⚠ No compatible components for {framework}")
+                        results['frameworks'][framework] = {
+                            'status': 'skipped',
+                            'reason': 'No compatible components'
+                        }
+                except Exception as e:
+                    error_msg = f"Error building {framework}: {str(e)}"
+                    print(f"  ✗ {error_msg}")
+                    results['errors'].append(error_msg)
+                    results['frameworks'][framework] = {
+                        'status': 'error',
+                        'error': str(e)
+                    }
+            else:
+                print(f"  ✗ Unknown framework: {framework}")
+                results['errors'].append(f"Unknown framework: {framework}")
+        
+        # Create package.json for npm distribution
+        self._create_package_json(build_dir, frameworks, theme)
+        
+        # Create README
+        self._create_library_readme(build_dir, frameworks, theme, results)
+        
+        # Remove duplicates
+        results['components_built'] = list(set(results['components_built']))
+        
+        print(f"\n✅ Build complete! Library created at: {build_dir}")
+        print(f"   Components: {len(results['components_built'])}")
+        print(f"   Frameworks: {len(results['frameworks'])}")
+        
+        return results
+    
+    def _create_shared_assets(self, build_dir: Path, theme: str):
+        """Create shared CSS/JS assets."""
+        assets_dir = build_dir / "assets"
+        assets_dir.mkdir(exist_ok=True)
+        
+        # Create main CSS
+        css_content = self._generate_theme_css(theme)
+        with open(assets_dir / "theme.css", 'w') as f:
+            f.write(css_content)
+        
+        # Create utility CSS
+        utils_css = self._generate_utilities_css()
+        with open(assets_dir / "utilities.css", 'w') as f:
+            f.write(utils_css)
+        
+        # Create component base JS
+        base_js = self._generate_base_javascript()
+        with open(assets_dir / "components.js", 'w') as f:
+            f.write(base_js)
+    
+    def _generate_theme_css(self, theme: str) -> str:
+        """Generate theme CSS."""
+        themes = {
+            'default': {
+                '--primary': '#3b82f6',
+                '--primary-hover': '#2563eb',
+                '--secondary': '#64748b',
+                '--success': '#10b981',
+                '--warning': '#f59e0b',
+                '--danger': '#ef4444',
+                '--info': '#06b6d4',
+                '--light': '#f8fafc',
+                '--dark': '#1e293b',
+                '--border': '#e2e8f0',
+                '--radius': '0.5rem',
+                '--shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+            },
+            'dark': {
+                '--primary': '#60a5fa',
+                '--primary-hover': '#93c5fd',
+                '--secondary': '#94a3b8',
+                '--success': '#34d399',
+                '--warning': '#fbbf24',
+                '--danger': '#f87171',
+                '--info': '#22d3ee',
+                '--light': '#f8fafc',
+                '--dark': '#0f172a',
+                '--border': '#334155',
+                '--radius': '0.5rem',
+                '--shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.3)',
+            },
+            'midnight': {
+                '--primary': '#00d4ff',
+                '--primary-hover': '#39ff14',
+                '--secondary': '#6366f1',
+                '--success': '#39ff14',
+                '--warning': '#ff6b35',
+                '--danger': '#ff1744',
+                '--info': '#00d4ff',
+                '--light': '#0b0f19',
+                '--dark': '#000000',
+                '--border': '#1a1f2e',
+                '--radius': '0.25rem',
+                '--shadow': '0 0 20px rgba(0, 212, 255, 0.3)',
+            }
+        }
+        
+        theme_vars = themes.get(theme, themes['default'])
+        
+        css = ":root {\n"
+        for key, value in theme_vars.items():
+            css += f"  {key}: {value};\n"
+        css += "}\n\n"
+        
+        # Base styles
+        css += """
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--light);
+  color: var(--dark);
+}
+
+/* Component base styles */
+.component {
+  transition: all 0.2s ease;
+}
+
+/* Focus states */
+*:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Utilities */
+.shadow { box-shadow: var(--shadow); }
+.rounded { border-radius: var(--radius); }
+.border { border: 1px solid var(--border); }
+"""
+        
+        return css
+    
+    def _generate_utilities_css(self) -> str:
+        """Generate utility classes."""
+        return """
+/* Spacing utilities */
+.m-0 { margin: 0; }
+.m-1 { margin: 0.25rem; }
+.m-2 { margin: 0.5rem; }
+.m-3 { margin: 1rem; }
+.m-4 { margin: 1.5rem; }
+.m-5 { margin: 3rem; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+.p-5 { padding: 3rem; }
+
+/* Flex utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+/* Grid utilities */
+.grid { display: grid; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+.gap-4 { gap: 1.5rem; }
+
+/* Display */
+.hidden { display: none; }
+.block { display: block; }
+.inline { display: inline; }
+
+/* Text */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Width/Height */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+"""
+    
+    def _generate_base_javascript(self) -> str:
+        """Generate base JavaScript for interactive components."""
+        return """
+// Component base class
+class Component {
+  constructor(element) {
+    this.element = element;
+    this.init();
+  }
+  
+  init() {
+    // Override in subclasses
+  }
+  
+  show() {
+    this.element.classList.remove('hidden');
+  }
+  
+  hide() {
+    this.element.classList.add('hidden');
+  }
+  
+  toggle() {
+    this.element.classList.toggle('hidden');
+  }
+}
+
+// Modal component
+class Modal extends Component {
+  init() {
+    this.closeBtn = this.element.querySelector('[data-close]');
+    if (this.closeBtn) {
+      this.closeBtn.addEventListener('click', () => this.hide());
+    }
+  }
+}
+
+// Tooltip component
+class Tooltip extends Component {
+  init() {
+    this.element.addEventListener('mouseenter', () => this.show());
+    this.element.addEventListener('mouseleave', () => this.hide());
+  }
+}
+
+// Initialize all components
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-component="modal"]').forEach(el => new Modal(el));
+  document.querySelectorAll('[data-component="tooltip"]').forEach(el => new Tooltip(el));
+});
+"""
+    
+    def _build_livewire_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build Livewire components."""
+        php_dir = dir_path / "app" / "View" / "Components"
+        php_dir.mkdir(parents=True, exist_ok=True)
+        
+        views_dir = dir_path / "resources" / "views" / "components"
+        views_dir.mkdir(parents=True, exist_ok=True)
+        
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            
+            # Create Livewire component
+            class_name = ''.join(word.capitalize() for word in comp.split('-'))
+            
+            php_code = f'''<?php
+
+namespace App\\View\\Components;
+
+use Livewire\\Component;
+
+class {class_name} extends Component
+{{
+    public $attributes;
+    
+    public function __construct($attributes = [])
+    {{
+        $this->attributes = $attributes;
+    }}
+    
+    public function render()
+    {{
+        return view('livewire.{comp}');
+    }}
+}}
+'''
+            
+            with open(php_dir / f"{class_name}.php", 'w') as f:
+                f.write(php_code)
+            
+            # Create Blade view
+            blade_code = self._get_blade_template(comp, info)
+            with open(views_dir / f"{comp}.blade.php", 'w') as f:
+                f.write(blade_code)
+    
+    def _build_blade_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build Blade components."""
+        components_dir = dir_path / "components"
+        components_dir.mkdir(parents=True, exist_ok=True)
+        
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            blade_code = self._get_blade_template(comp, info)
+            
+            with open(components_dir / f"{comp}.blade.php", 'w') as f:
+                f.write(blade_code)
+    
+    def _build_filament_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build Filament components."""
+        resources_dir = dir_path / "Filament" / "Resources"
+        resources_dir.mkdir(parents=True, exist_ok=True)
+        
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            class_name = ''.join(word.capitalize() for word in comp.split('-'))
+            
+            # Build Filament resource schema
+            schema = self._get_filament_schema(comp)
+            
+            resource_code = f'''<?php
+
+namespace App\\Filament\\Resources;
+
+use App\\Models\\{class_name};
+use Filament\\Forms;
+use Filament\\Tables;
+use Filament\\Resources\\Resource;
+
+class {class_name}Resource extends Resource
+{{
+    protected static ?string $model = {class_name}::class;
+    
+    public static function form(Forms\\Form $form): Forms\\Form
+    {{
+        return $form
+            ->schema([
+                {schema}
+            ]);
+    }}
+    
+    public static function table(Tables\\Table $table): Tables\\Table
+    {{
+        return $table
+            ->columns([
+                // Define columns
+            ])
+            ->filters([
+                // Define filters
+            ]);
+    }}
+}}
+'''
+            
+            with open(resources_dir / f"{class_name}Resource.php", 'w') as f:
+                f.write(resource_code)
+    
+    def _build_vue_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build Vue 3 components."""
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            class_name = ''.join(word.capitalize() for word in comp.split('-'))
+            
+            vue_code = f'''<template>
+  <div class="{comp}" :class="$props.class">
+    <!-- {info['description']} -->
+    <slot></slot>
+  </div>
+</template>
+
+<script setup>
+defineProps({{
+  class: {{
+    type: String,
+    default: ''
+  }}
+}})
+</script>
+
+<style scoped>
+.{comp} {{
+  /* Component styles */
+}}
+</style>
+'''
+            
+            with open(dir_path / f"{comp}.vue", 'w') as f:
+                f.write(vue_code)
+    
+    def _build_react_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build React components."""
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            class_name = ''.join(word.capitalize() for word in comp.split('-'))
+            
+            react_code = f'''import React from 'react';
+import './{comp}.css';
+
+export const {class_name} = ({{ className, children, ...props }}) => {{
+  return (
+    <div
+      className={{"{comp} " + className}}
+{{{' '}}
+      {...props}
+    >
+      {{children}}
+    </div>
+  );
+}};
+
+{class_name}.displayName = '{class_name}';
+'''
+            
+            with open(dir_path / f"{comp}.jsx", 'w') as f:
+                f.write(react_code)
+    
+    def _build_svelte_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build Svelte components."""
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            
+            svelte_code = f'''<script>
+  export let className = '';
+</script>
+
+<div class="{comp} {{className}}">
+  <!-- {info['description']} -->
+  <slot></slot>
+</div>
+
+<style>
+  .{comp} {{
+    /* Component styles */
+  }}
+</style>
+'''
+            
+            with open(dir_path / f"{comp}.svelte", 'w') as f:
+                f.write(svelte_code)
+    
+    def _build_tailwind_config(self, dir_path: Path, components: List[str], theme: str):
+        """Build Tailwind CSS configuration."""
+        config = '''/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx,php,blade}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: 'var(--primary)',
+          hover: 'var(--primary-hover)',
+        },
+        secondary: 'var(--secondary)',
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)',
+        light: 'var(--light)',
+        dark: 'var(--dark)',
+      },
+      borderRadius: {
+        DEFAULT: 'var(--radius)',
+      },
+    },
+  },
+  plugins: [],
+}
+'''
+        
+        with open(dir_path / "tailwind.config.js", 'w') as f:
+            f.write(config)
+        
+        # Create component CSS
+        css_dir = dir_path / "css"
+        css_dir.mkdir(exist_ok=True)
+        
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            css = self._get_tailwind_component_css(comp)
+            with open(css_dir / f"{comp}.css", 'w') as f:
+                f.write(css)
+    
+    def _build_alpine_component(self, dir_path: Path, components: List[str], theme: str):
+        """Build Alpine.js components."""
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            
+            alpine_code = f'''<div x-data="{{ {comp}() }}" class="{comp}">
+  <!-- {info['description']} -->
+  <template x-if="show">
+    <div>
+      <slot></slot>
+    </div>
+  </template>
+</div>
+
+<script>
+function {comp}() {{
+  return {{
+    show: true,
+    // Add component logic
+  }}
+}}
+</script>
+'''
+            
+            with open(dir_path / f"{comp}.html", 'w') as f:
+                f.write(alpine_code)
+    
+    def _build_gridcn_system(self, dir_path: Path, components: List[str], theme: str):
+        """Build GridCN grid system."""
+        # Create GridCN CSS framework
+        gridcss_dir = dir_path / "src"
+        gridcss_dir.mkdir(parents=True, exist_ok=True)
+        
+        grid_code = self._generate_gridcn_css()
+        with open(gridcss_dir / "gridcn.css", 'w') as f:
+            f.write(grid_code)
+        
+        # Create React/Vue components
+        for comp in components:
+            if comp not in self.components:
+                continue
+            
+            info = self.components[comp]
+            
+            # Generate GridCN component
+            component_code = self._get_gridcn_component(comp, info)
+            
+            ext = 'vue' if 'vue' in info['frameworks'] else 'jsx'
+            with open(gridcss_dir / f"{comp}.{ext}", 'w') as f:
+                f.write(component_code)
+    
+    def _get_blade_template(self, comp: str, info: Dict) -> str:
+        """Generate Blade component template."""
+        templates = {
+            'card': '''<div class="card {{ $class }}">
+    <div class="card-header">
+        {{ $header ?? '' }}
+    </div>
+    <div class="card-body">
+        {{ $slot }}
+    </div>
+    @if($footer)
+    <div class="card-footer">
+        {{ $footer }}
+    </div>
+    @endif
+</div>''',
+            'button': '''<button type="{{ $type ?? 'button' }}" 
+                   class="btn btn-{{ $variant ?? 'primary' }} {{ $class }}"
+                   {{ $attributes->merge(['class' => '']) }}>
+    {{ $slot }}
+</button>''',
+            'input': '''<div class="form-group">
+    @if($label)
+    <label class="form-label">{{ $label }}</label>
+    @endif
+    <input type="{{ $type ?? 'text' }}" 
+           class="form-control {{ $class }}" 
+           value="{{ $value ?? old($name) }}"
+           {{ $attributes->merge(['class' => '']) }}>
+    @error($name)
+    <div class="form-error">{{ $message }}</div>
+    @enderror
+</div>''',
+            'modal': '''<div class="modal {{ $class }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ $title ?? '' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {{ $slot }}
+            </div>
+            <div class="modal-footer">
+                {{ $footer ?? '' }}
+            </div>
+        </div>
+    </div>
+</div>''',
+            'table': '''<div class="table-responsive">
+    <table class="table {{ $class }}">
+        @if($headers ?? false)
+        <thead>
+            <tr>
+                @foreach($headers as $header)
+                <th>{{ $header }}</th>
+                @endforeach
+            </tr>
+        </thead>
+        @endif
+        <tbody>
+            {{ $slot }}
+        </tbody>
+    </table>
+</div>''',
+        }
+        
+        return templates.get(comp, f'''<div class="{comp} {{ $class }}">
+    <!-- {info['description']} -->
+    {{ $slot }}
+</div>''')
+    
+    def _get_filament_schema(self, comp: str) -> str:
+        """Generate Filament form schema."""
+        schemas = {
+            'input': 'Forms\\Components\\TextInput::make(\'name\')->label(\'Name\'),',
+            'textarea': 'Forms\\Components\\Textarea::make(\'content\')->label(\'Content\'),',
+            'select': 'Forms\\Components\\Select::make(\'status\')->label(\'Status\')->options([\'active\' => \'Active\', \'inactive\' => \'Inactive\']),',
+            'checkbox': 'Forms\\Components\\Toggle::make(\'is_active\')->label(\'Active\'),',
+            'file': 'Forms\\Components\\FileUpload::make(\'image\')->label(\'Image\'),',
+        }
+        
+        return schemas.get(comp, 'Forms\\Components\\TextInput::make(\'name\')->label(\'Name\'),')
+    
+    def _get_tailwind_component_css(self, comp: str) -> str:
+        """Generate Tailwind component CSS."""
+        css_rules = {
+            'btn': '''@layer components {
+  .btn {
+    @apply px-4 py-2 rounded font-medium inline-flex items-center justify-center transition-colors;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-hover;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-opacity-80;
+  }
+}
+''',
+            'card': '''@layer components {
+  .card {
+    @apply bg-white rounded-lg shadow border border-gray-200;
+  }
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200 font-medium;
+  }
+  .card-body {
+    @apply p-6;
+  }
+  .card-footer {
+    @apply px-6 py-4 border-t border-gray-200;
+  }
+}
+''',
+        }
+        
+        return css_rules.get(comp, f'''
+.{' .'.join(f"{comp}-part" for part in ['base', 'header', 'body'])} {{
+  /* Tailwind styles for {comp} */
+}}
+''')
+    
+    def _get_gridcn_component(self, comp: str, info: Dict) -> str:
+        """Generate GridCN component."""
+        templates = {
+            'grid-container': '''export const GridContainer = ({ children, className = '' }) => (
+  <div className={`grid-container ${className}`}>
+    {children}
+  </div>
+);
+
+// CSS: .grid-container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+''',
+            'grid-row': '''export const GridRow = ({ children, className = '', gutter = true }) => (
+  <div className={`grid-row ${gutter ? 'gutter' : ''} ${className}`}>
+    {children}
+  </div>
+);
+
+// CSS: .grid-row { display: flex; flex-wrap: wrap; }
+//       .grid-row.gutter { margin: 0 -0.5rem; }
+''',
+            'grid-col': '''export const GridCol = ({ children, span = 12, md = null, lg = null, className = '' }) => (
+  <div className={`grid-col span-${span} ${md ? `md-span-${md}` : ''} ${lg ? `lg-span-${lg}` : ''} ${className}`}>
+    {children}
+  </div>
+);
+''',
+        }
+        
+        return templates.get(comp, f'''// {info['description']}
+export const {info['name']} = ({{ children, ...props }}) => (
+  <div className="{comp}" {{...props}}>
+    {{children}}
+  </div>
+);
+''')
+    
+    def _create_package_json(self, build_dir: Path, frameworks: List[str], theme: str):
+        """Create package.json for npm distribution."""
+        package = {
+            'name': f'component-library-{theme}',
+            'version': '1.0.0',
+            'description': f'Multi-framework component library ({theme} theme)',
+            'main': 'assets/components.js',
+            'style': 'assets/theme.css',
+            'scripts': {
+                'build': 'echo "Already built"',
+                'dev': 'echo "Development mode"',
+            },
+            'keywords': ['components', 'ui', 'mcp', 'multi-framework'],
+            'author': '',
+            'license': 'MIT',
+            'frameworks': frameworks,
+            'components': list(set(self.components.keys())),
+        }
+        
+        with open(build_dir / 'package.json', 'w') as f:
+            json.dump(package, f, indent=2)
+    
+    def _create_library_readme(self, build_dir: Path, frameworks: List[str], theme: str, results: Dict):
+        """Create README for the component library."""
+        readme = f'''# Component Library - {theme.title()} Theme
+
+Multi-framework component library built with MCP Component Library Builder.
+
+## Frameworks Included
+
+- {", ".join(frameworks)}
+
+## Components
+
+- {", ".join(results["components_built"])}
+
+## Installation
+
+```bash
+npm install component-library-{theme}
+```
+
+## Usage
+
+### JavaScript/TypeScript
+```javascript
+import {{ components }} from 'component-library-{theme}';
+```
+
+### CSS
+```css
+@import 'component-library-{theme}/assets/theme.css';
+```
+
+## Build Info
+
+- Built with MCP Component Library Builder
+- Theme: {theme}
+- Frameworks: {", ".join(frameworks)}
+- Components: {len(results["components_built"])}
+'''
+        
+        with open(build_dir / 'README.md', 'w') as f:
+            f.write(readme)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Build multi-framework component libraries"
+    )
+    parser.add_argument(
+        '--frameworks', '-f',
+        nargs='+',
+        default=['livewire', 'blade', 'vue', 'react', 'svelte', 'tailwind', 'alpine', 'gridcn'],
+        help="Frameworks to include"
+    )
+    parser.add_argument(
+        '--components', '-c',
+        nargs='+',
+        default=['all'],
+        help="Components to build (or 'all')"
+    )
+    parser.add_argument(
+        '--theme', '-t',
+        default='default',
+        choices=['default', 'dark', 'midnight'],
+        help="Theme to use"
+    )
+    parser.add_argument(
+        '--output', '-o',
+        help="Output directory"
+    )
+    
+    args = parser.parse_args()
+    
+    # Handle 'all' components
+    if 'all' in args.components or args.components == ['all']:
+        builder = ComponentLibraryBuilder(args.output or '.')
+        args.components = list(builder.components.keys())
+    
+    builder = ComponentLibraryBuilder(args.output or '.')
+    
+    try:
+        results = builder.build_library(
+            frameworks=args.frameworks,
+            components=args.components,
+            theme=args.theme,
+            output_path=args.output
+        )
+        
+        if results['success']:
+            print(f"\n✅ Successfully built component library!")
+            print(f"   Location: {results['build_dir']}")
+            print(f"   Components: {len(results['components_built'])}")
+            print(f"   Frameworks: {len(results['frameworks'])}")
+        else:
+            print(f"\n✗ Build completed with errors:")
+            for error in results['errors']:
+                print(f"   - {error}")
+            sys.exit(1)
+    
+    except Exception as e:
+        print(f"\n✗ Build failed: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

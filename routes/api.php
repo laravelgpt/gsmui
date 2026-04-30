@@ -37,3 +37,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/analytics/dashboard', [AnalyticsController::class, 'dashboard']);
     });
 });
+
+// Chat UI Search
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
+    Route::post('/chatui/search', [\App\Http\Controllers\ChatUIController::class, 'webSearch']);
+});

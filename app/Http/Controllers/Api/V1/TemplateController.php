@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers\Api\V1;
@@ -41,7 +40,7 @@ class TemplateController extends Controller
             $templates->getCollection()->transform(function ($template) use ($user) {
                 $template->accessible = $this->accessService->canAccessTemplate($user, $template);
                 $template->purchased = $user->purchases()
-                    ->where('purchasable_type', 'App\\Models\\Template')
+                    ->where('purchasable_type', 'App\Models\Template')
                     ->where('purchasable_id', $template->id)
                     ->where('payment_status', 'completed')
                     ->exists();
@@ -108,7 +107,7 @@ class TemplateController extends Controller
         }
 
         $alreadyPurchased = $user->purchases()
-            ->where('purchasable_type', 'App\\Models\\Template')
+            ->where('purchasable_type', 'App\Models\Template')
             ->where('purchasable_id', $template->id)
             ->where('payment_status', 'completed')
             ->exists();
