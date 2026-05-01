@@ -142,39 +142,3 @@ class ComponentAccessService
         return array_unique($ids);
     }
 }
-
-    /**
-     * Record chat interaction
-     */
-    public function recordChatInteraction($chat)
-    {
-        // Track chat interactions for user analytics
-        \App\Models\Analytics::recordInteraction('chat', [
-            'user_id' => $chat->user_id,
-            'message' => substr($chat->message, 0, 200),
-            'category' => $chat->category,
-            'type' => $chat->type,
-        ]);
-    }
-
-    /**
-     * Record download from chat context
-     */
-    public function recordChatDownload($user, $component)
-    {
-        \App\Models\Analytics::recordInteraction('chat_download', [
-            'user_id' => $user->id,
-            'component_id' => $component->id,
-            'component_name' => $component->name,
-        ]);
-    }
-
-    /**
-     * Check if user can use chat features
-     */
-    public function canUseChatFeatures(User $user): bool
-    {
-        // All authenticated users can use basic chat
-        // Premium features require active subscription
-        return $this->hasActiveSubscription($user) || $user->role === 'admin';
-    }

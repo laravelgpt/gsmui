@@ -1,74 +1,55 @@
-
 @extends('layouts.app')
 
-@section('title', 'Register')
-
 @section('content')
-<div class="min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-md">
-        <div class="glass-card p-8">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#39FF14] to-[#00D4FF] flex items-center justify-center">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="8.5" cy="7" r="4"/>
-                        <line x1="20" y1="8" x2="20" y2="14"/>
-                        <line x1="23" y1="11" x2="17" y2="11"/>
-                    </svg>
-                </div>
-                <h1 class="text-2xl font-bold">Create Account</h1>
-                <p class="text-gray-400 mt-2">Start building with GSM-UI</p>
-            </div>
-
-            @if(session('error'))
-                <div class="mb-6 p-4 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)]">
-                    <p class="text-[#EF4444] text-sm">{{ session('error') }}</p>
-                </div>
-            @endif
-
-            @if(session('success'))
-                <div class="mb-6 p-4 rounded-lg bg-[rgba(57,255,20,0.1)] border border-[rgba(57,255,20,0.2)]">
-                    <p class="text-[#39FF14] text-sm">{{ session('success') }}</p>
-                </div>
-            @endif
-
-            <form method="POST" action="/register" class="space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-                    <input type="text" name="name" required
-                        class="input-glow w-full" placeholder="John Doe">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-                    <input type="email" name="email" required
-                        class="input-glow w-full" placeholder="you@example.com">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
-                    <input type="password" name="password" required minlength="8"
-                        class="input-glow w-full" placeholder="Create a strong password">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
-                    <input type="password" name="password_confirmation" required
-                        class="input-glow w-full" placeholder="Confirm your password">
-                </div>
-                <div class="text-sm text-gray-400">
-                    By signing up, you agree to our <a href="/docs" class="text-[#00D4FF]">Terms of Service</a>.
-                </div>
-                <button type="submit" class="w-full btn-primary py-3 mt-4">
-                    Create Account
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-gray-400">
-                    Already have an account? 
-                    <a href="/login" class="text-[#00D4FF] hover:text-[#39FF14] font-medium">Sign in</a>
-                </p>
-            </div>
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-500 to-purple-700 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-2xl">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
         </div>
+        <form class="mt-8 space-y-6" method="POST" action="{{ route('register') }}">
+            @csrf
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="name" class="sr-only">Name</label>
+                    <input id="name" name="name" type="text" required autofocus
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm"
+                        placeholder="Full Name" value="{{ old('name') }}">
+                    @error('name')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="email" class="sr-only">Email address</label>
+                    <input id="email" name="email" type="email" required
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm"
+                        placeholder="Email address" value="{{ old('email') }}">
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" name="password" type="password" required
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm"
+                        placeholder="Password">
+                    @error('password')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="password-confirm" class="sr-only">Confirm Password</label>
+                    <input id="password-confirm" name="password_confirmation" type="password" required
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm"
+                        placeholder="Confirm Password">
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition">
+                    Register
+                </button>
+            </div>
+        </form>
+        <p class="text-center text-sm text-gray-600">Already have an account? <a href="{{ route('login') }}" class="font-medium text-pink-600 hover:text-pink-500">Login here</a></p>
     </div>
 </div>
 @endsection
